@@ -7,8 +7,8 @@ st.set_page_config(page_title="Calculadora TAF PMMS", layout="centered")
 st.title("CALCULADORA TAF – PMMS")
 
 st.markdown(
-    "Simulador de nota conforme Portaria nº 042/PM-1/EMG/2018 "
-    "(Protocolo Masculino e Feminino)."
+    "Simulador de nota conforme Portaria nº 042/PM-1/EMG/2018. "
+    
 )
 
 sexo_label = st.radio("Gênero:", ["Masculino", "Feminino"])
@@ -124,7 +124,7 @@ NOTA_MINIMA = 7.0
 
 colb1, colb2 = st.columns(2)
 with colb1:
-    calcular = st.button("Calcular nota")
+    calcular = st.button("Calcular")
 with colb2:
     limpar = st.button("Limpar")
 
@@ -164,3 +164,4 @@ if calcular:
             "Situação: INAPTO no TAF "
             "(média < 7,0 ou alguma prova com nota 0,0)."
         )
+
