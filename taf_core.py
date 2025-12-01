@@ -76,9 +76,7 @@ df_f = pd.read_csv(BASE_DIR / "tabela_feminina.csv", sep=";")
 
 # Corrida masculina está em km (1.00, 1.10, ...). Converto para metros.
 TAB_M = {
-    "corrida": _prepara_tabela_exercicio(
-        df_m, COL_CORRIDA, convert=lambda x: int(round(x * 1000))
-    ),
+    "corrida": _prepara_tabela_exercicio(df_m, COL_CORRIDA, convert=int),
     "apoio":   _prepara_tabela_exercicio(df_m, COL_APOIO,   convert=int),
     "barra":   _prepara_tabela_exercicio(df_m, COL_BARRA,   convert=int),
     "curlup":  _prepara_tabela_exercicio(df_m, COL_CURLUP,  convert=int),
@@ -194,3 +192,4 @@ def resultado_taf(
     apto = (media >= nota_minima) and not zerou_alguma
 
     return media, notas, apto, zerou_alguma
+
