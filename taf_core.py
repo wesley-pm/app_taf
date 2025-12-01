@@ -194,3 +194,19 @@ def resultado_taf(
     apto = (media >= nota_minima) and not zerou_alguma
 
     return media, notas, apto, zerou_alguma
+
+def desempenho_para_nota_minima(sexo: str, idade: int, nota_min: float = 7.0) -> Dict[str, int | None]:
+    faixa = faixa_key(idade)
+    col_nota = FAIXA_MAP[faixa]
+    tab = TABELAS[sexo]
+
+    resultados = {}
+    for nome_exercicio, df in tab.items():
+        filtro = df[df[col_nota] >= nota_min]
+        if not filtro.empty:
+            resultados[nome_exercicio] = int(filtro["valor"].min())
+        else:
+            resultados[nome_exercicio] = None
+    return resultados
+
+
