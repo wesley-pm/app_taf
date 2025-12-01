@@ -48,20 +48,23 @@ def _prepara_tabela_exercicio(
     cols = [col_valor] + list(FAIXA_MAP.values())
     tmp = df[cols].dropna(subset=[col_valor])
 
-    # Limpeza da coluna de valor
+    # Limpeza do valor: remove espaço e ponto de milhar
     tmp[col_valor] = (
         tmp[col_valor]
         .astype(str)
         .str.strip()
-        .str.replace(",", ".", regex=False)
+        .str.replace(".", "", regex=False)  # Remove ponto de milhar
+        .str.replace(",", ".", regex=False)  # Converte decimal se necessário
         .str.replace(" ", "", regex=False)
     )
 
-    # Conversão segura para float antes de aplicar transformação
+    tmp["valor"] = pd.to_numeric(tmp[col_valor], errors="coerce")
+
+    # Se quiser ignorar valores absurdamente baixos (opcional)
+    tmp = tmp[tmp["valor"].notna() & (tmp["valor"] > 100)]
+
     if convert is not None:
-        tmp["valor"] = tmp[col_valor].astype(float).apply(convert)
-    else:
-        tmp["valor"] = tmp[col_valor].astype(float)
+        tmp["valor"] = tmp["valor"].apply(convert)
 
     tmp = (
         tmp
@@ -211,6 +214,7 @@ def desempenho_para_nota_minima(sexo: str, idade: int, nota_min: float = 7.0) ->
         else:
             resultados[nome_exercicio] = None
     return resultados
+
 
 
 
