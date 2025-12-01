@@ -87,7 +87,7 @@ TAB_M = {
 
 # Corrida feminina já está em metros (700, 750, ...).
 TAB_F = {
-    "corrida": _prepara_tabela_exercicio(df_f, COL_CORRIDA, convert=int),
+    "corrida": _prepara_tabela_exercicio(df_f, COL_CORRIDA, convert=lambda x: int(float(x))),
     "apoio":   _prepara_tabela_exercicio(df_f, COL_APOIO,   convert=int),
     "barra":   _prepara_tabela_exercicio(df_f, COL_BARRA,   convert=int),
     "curlup":  _prepara_tabela_exercicio(df_f, COL_CURLUP,  convert=int),
@@ -208,5 +208,6 @@ def desempenho_para_nota_minima(sexo: str, idade: int, nota_min: float = 7.0) ->
         else:
             resultados[nome_exercicio] = None
     return resultados
+
 
 
