@@ -46,21 +46,24 @@ def _prepara_tabela_exercicio(
     col_valor: str,
     convert=None,
 ) -> pd.DataFrame:
-    """
-    Monta uma tabela simplificada com:
-    - 'valor' (metros ou repetições)
-    - colunas de nota por faixa etária
-    """
     cols = [col_valor] + list(FAIXA_MAP.values())
     tmp = df[cols].dropna(subset=[col_valor])
 
-    # Converte para a unidade que vamos usar no app
-    if convert is not None:
-        tmp["valor"] = tmp[col_valor].apply(convert)
-    else:
-        tmp["valor"] = tmp[col_valor]
+    # Força limpeza do valor antes de conversão
+    tmp[col_valor] = (
+        tmp[col_valor]
+        .astype(str)
+        .str.strip()
+        .str.replace(",", ".", regex=False)
+        .str.replace(" ", "", regex=False)
+    )
 
-    # Remove duplicados e ordena
+    # Converte para float antes de int, se necessário
+    if convert is not None:
+        tmp["valor"] = tmp[col_valor].astype(float).apply(convert)
+    else:
+        tmp["valor"] = tmp[col_valor].astype(float)
+
     tmp = (
         tmp
         .drop_duplicates(subset=["valor"])
@@ -68,7 +71,6 @@ def _prepara_tabela_exercicio(
         .reset_index(drop=True)
     )
     return tmp
-
 
 # --- Carrega as duas tabelas originais da Portaria ---
 df_m = pd.read_csv(BASE_DIR / "tabela_masculina.csv", sep=";")
@@ -208,6 +210,7 @@ def desempenho_para_nota_minima(sexo: str, idade: int, nota_min: float = 7.0) ->
         else:
             resultados[nome_exercicio] = None
     return resultados
+
 
 
 
