@@ -40,7 +40,6 @@ def faixa_key(idade: int) -> str:
     else:
         return "acima_51"
 
-
 def _prepara_tabela_exercicio(
     df: pd.DataFrame,
     col_valor: str,
@@ -49,7 +48,7 @@ def _prepara_tabela_exercicio(
     cols = [col_valor] + list(FAIXA_MAP.values())
     tmp = df[cols].dropna(subset=[col_valor])
 
-    # Força limpeza do valor antes de conversão
+    # Limpeza da coluna de valor
     tmp[col_valor] = (
         tmp[col_valor]
         .astype(str)
@@ -58,7 +57,7 @@ def _prepara_tabela_exercicio(
         .str.replace(" ", "", regex=False)
     )
 
-    # Converte para float antes de int, se necessário
+    # Conversão segura para float antes de aplicar transformação
     if convert is not None:
         tmp["valor"] = tmp[col_valor].astype(float).apply(convert)
     else:
@@ -89,7 +88,9 @@ TAB_M = {
 
 # Corrida feminina já está em metros (700, 750, ...).
 TAB_F = {
-    "corrida": _prepara_tabela_exercicio(df_f, COL_CORRIDA, convert=lambda x: int(float(x))),
+    "corrida": _prepara_tabela_exercicio(
+    df_f, COL_CORRIDA, convert=lambda x: int(float(x))
+    ),
     "apoio":   _prepara_tabela_exercicio(df_f, COL_APOIO,   convert=int),
     "barra":   _prepara_tabela_exercicio(df_f, COL_BARRA,   convert=int),
     "curlup":  _prepara_tabela_exercicio(df_f, COL_CURLUP,  convert=int),
@@ -210,6 +211,7 @@ def desempenho_para_nota_minima(sexo: str, idade: int, nota_min: float = 7.0) ->
         else:
             resultados[nome_exercicio] = None
     return resultados
+
 
 
 
