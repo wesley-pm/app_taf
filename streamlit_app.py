@@ -1,6 +1,6 @@
 import streamlit as st
 
-from taf_core import resultado_taf
+from taf_core import resultado_taf, desempenho_para_nota_minima
 
 st.set_page_config(page_title="Calculadora TAF PMMS", layout="centered")
 
@@ -14,6 +14,27 @@ sexo_label = st.radio("Gênero:", ["Masculino", "Feminino"])
 sexo = "M" if sexo_label == "Masculino" else "F"
 
 idade = st.number_input("Idade", min_value=18, max_value=70, value=30, step=1)
+
+# Mostrar desempenhos mínimos necessários para nota >= 7.0
+minimos = desempenho_para_nota_minima(sexo, idade)
+
+st.markdown("Desempenho mínimo para nota 7.0 em cada prova")
+
+# Mapeia nomes legíveis para o app
+nomes = {
+    "corrida": "Corrida 12 min",
+    "apoio": "Flexão de braço (solo)",
+    "barra": "Flexão na barra",
+    "curlup": "Abdominal Carl-Up",
+    "remador": "Abdominal Remador",
+}
+
+for chave, nome_legivel in nomes.items():
+    valor = minimos[chave]
+    if valor is not None:
+        st.markdown(f"- **{nome_legivel}**: {valor}")
+    else:
+        st.markdown(f"- **{nome_legivel}**: *sem nota ≥ 7.0*")
 
 st.subheader("Informe seu desempenho nas provas")
 
@@ -163,3 +184,4 @@ if calcular:
             "Situação: INAPTO no TAF "
             "(média < 7,0 ou alguma prova com nota 0,0)."
         )
+
