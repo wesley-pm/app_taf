@@ -40,32 +40,27 @@ def faixa_key(idade: int) -> str:
     else:
         return "acima_51"
 
+
 def _prepara_tabela_exercicio(
     df: pd.DataFrame,
     col_valor: str,
     convert=None,
 ) -> pd.DataFrame:
+    """
+    Monta uma tabela simplificada com:
+    - 'valor' (metros ou repetições)
+    - colunas de nota por faixa etária
+    """
     cols = [col_valor] + list(FAIXA_MAP.values())
     tmp = df[cols].dropna(subset=[col_valor])
 
-    # Limpeza do valor: remove espaço e ponto de milhar
-    tmp[col_valor] = (
-        tmp[col_valor]
-        .astype(str)
-        .str.strip()
-        .str.replace(".", "", regex=False)  # Remove ponto de milhar
-        .str.replace(",", ".", regex=False)  # Converte decimal se necessário
-        .str.replace(" ", "", regex=False)
-    )
-
-    tmp["valor"] = pd.to_numeric(tmp[col_valor], errors="coerce")
-
-    # Se quiser ignorar valores absurdamente baixos (opcional)
-    tmp = tmp[tmp["valor"].notna() & (tmp["valor"] > 100)]
-
+    # Converte para a unidade que vamos usar no app
     if convert is not None:
-        tmp["valor"] = tmp["valor"].apply(convert)
+        tmp["valor"] = tmp[col_valor].apply(convert)
+    else:
+        tmp["valor"] = tmp[col_valor]
 
+    # Remove duplicados e ordena
     tmp = (
         tmp
         .drop_duplicates(subset=["valor"])
@@ -73,6 +68,7 @@ def _prepara_tabela_exercicio(
         .reset_index(drop=True)
     )
     return tmp
+
 
 # --- Carrega as duas tabelas originais da Portaria ---
 df_m = pd.read_csv(BASE_DIR / "tabela_masculina.csv", sep=";")
@@ -91,9 +87,7 @@ TAB_M = {
 
 # Corrida feminina já está em metros (700, 750, ...).
 TAB_F = {
-    "corrida": _prepara_tabela_exercicio(
-    df_f, COL_CORRIDA, convert=lambda x: int(float(x))
-    ),
+    "corrida": _prepara_tabela_exercicio(df_f, COL_CORRIDA, convert=int),
     "apoio":   _prepara_tabela_exercicio(df_f, COL_APOIO,   convert=int),
     "barra":   _prepara_tabela_exercicio(df_f, COL_BARRA,   convert=int),
     "curlup":  _prepara_tabela_exercicio(df_f, COL_CURLUP,  convert=int),
@@ -200,23 +194,3 @@ def resultado_taf(
     apto = (media >= nota_minima) and not zerou_alguma
 
     return media, notas, apto, zerou_alguma
-
-def desempenho_para_nota_minima(sexo: str, idade: int, nota_min: float = 7.0) -> Dict[str, int | None]:
-    faixa = faixa_key(idade)
-    col_nota = FAIXA_MAP[faixa]
-    tab = TABELAS[sexo]
-
-    resultados = {}
-    for nome_exercicio, df in tab.items():
-        filtro = df[df[col_nota] >= nota_min]
-        if not filtro.empty:
-            resultados[nome_exercicio] = int(filtro["valor"].min())
-        else:
-            resultados[nome_exercicio] = None
-    return resultados
-
-
-
-
-
-
