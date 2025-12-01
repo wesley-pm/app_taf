@@ -19,7 +19,7 @@ idade = st.number_input("Idade", min_value=18, max_value=70, value=30, step=1)
 # Mostrar desempenhos mínimos necessários para nota >= 7.0
 minimos = desempenho_para_nota_minima(sexo, idade)
 
-st.markdown("### 🔢 Desempenho mínimo para nota 7.0 em cada prova")
+st.markdown("Desempenho mínimo para nota 7.0 em cada prova")
 
 # Mapeia nomes legíveis para o app
 nomes = {
@@ -185,5 +185,6 @@ if calcular:
             "Situação: INAPTO no TAF "
             "(média < 7,0 ou alguma prova com nota 0,0)."
         )
+
 
 
