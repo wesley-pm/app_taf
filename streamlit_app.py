@@ -149,7 +149,7 @@ with colb2:
     limpar = st.button("Limpar")
 
 if limpar:
-    st.rerun()()
+    st.rerun()
 
 if calcular:
     media, notas, apto, zerou = resultado_taf(
